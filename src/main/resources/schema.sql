@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS alpha;
 CREATE TABLE IF NOT EXISTS user_profile (
-	id INT,
+	id INT PRIMARY KEY,
 	login VARCHAR (50),
 	password CHAR (32),
 	created TIMESTAMP WITH TIME ZONE,
