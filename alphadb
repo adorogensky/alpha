@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] || [ "$1" != "junit" ] && [ "$1" != "local" ]; then
+    echo "Usage: $0 [junit|local]"
+    exit 1
+fi
+
+docker run -it --rm --network alpha-network postgres psql -h alphadb-$1 -p 5432 -U alphadb-$1

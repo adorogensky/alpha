@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] || [ "$1" != "junit" ] && [ "$1" != "local" ]; then
+	echo "Usage: $0 [junit|local]"
+	exit 1
+fi
+
+host_port=5432
+
+if [ "$1" = "junit" ]; then
+	host_port=5433
+fi
+
+docker run --name alphadb-$1 --network alpha-network \
+-e POSTGRES_DB=alphadb-$1 \
+-e POSTGRES_USER=alphadb-$1 \
+-p $host_port:5432 -d postgres 
