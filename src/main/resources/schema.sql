@@ -1,5 +1,5 @@
 CREATE SCHEMA IF NOT EXISTS alpha;
-CREATE TABLE IF NOT EXISTS user_profile (
+CREATE TABLE IF NOT EXISTS alpha.user_profile (
 	id INT PRIMARY KEY,
 	login VARCHAR (50),
 	password CHAR (32),

@@ -2,9 +2,11 @@ package com.github.adorogensky.workshop.alpha.domain.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(schema = "alpha")
 public class UserProfile {
 
 	@Id
