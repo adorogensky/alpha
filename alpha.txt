@@ -1,0 +1,20 @@
+New alpha command line interface
+
+alpha # enters interactive mode with "alpha:" prompt 
+alpha run
+alpha stop
+alpha restart
+alpha create local database # creates a postgres database to run alpha on a local machine
+alpha create junit database # creates a postgres database to run alpha's junit tests 
+alpha create local and junit databases # creates local and junit databases
+alpha drop local database
+alpha drop junit database
+alpha drop local and junit databases
+alpha recreate local database # drops and then creates a new local database
+alpha recreate junit database
+alpha recreate local and junit databases
+alpha connect to local database
+alpha connect to junit database
+alpha import test data into local database
+alpha drop test data from local database
+
