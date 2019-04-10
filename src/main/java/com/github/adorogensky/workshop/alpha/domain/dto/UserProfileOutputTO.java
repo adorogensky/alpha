@@ -4,11 +4,21 @@ import java.time.LocalDateTime;
 
 public class UserProfileOutputTO {
 
+	private Integer id;
+
 	private String login;
 
 	private LocalDateTime created;
 
 	private LocalDateTime modified;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public String getLogin() {
 		return login;

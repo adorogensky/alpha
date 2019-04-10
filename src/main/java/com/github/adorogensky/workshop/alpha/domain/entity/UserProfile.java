@@ -1,8 +1,8 @@
 package com.github.adorogensky.workshop.alpha.domain.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,12 +10,15 @@ import java.time.LocalDateTime;
 public class UserProfile {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence_generator")
+	@SequenceGenerator(name = "user_id_sequence_generator", schema = "alpha", allocationSize = 1, sequenceName = "user_id_seq")
 	private Integer id;
 
 	private String login;
 
 	private String password;
 
+	@CreationTimestamp
 	private LocalDateTime created;
 
 	private LocalDateTime modified;

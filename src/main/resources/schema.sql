@@ -1,8 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS alpha;
+
+CREATE SEQUENCE IF NOT EXISTS alpha.user_id_seq;
+
 CREATE TABLE IF NOT EXISTS alpha.user_profile (
 	id INT PRIMARY KEY,
-	login VARCHAR (50),
-	password CHAR (32),
+	login VARCHAR (50) NOT NULL UNIQUE,
+	password CHAR (32) NOT NULL,
 	created TIMESTAMP WITH TIME ZONE,
 	modified TIMESTAMP WITH TIME ZONE
-)
+);
+
