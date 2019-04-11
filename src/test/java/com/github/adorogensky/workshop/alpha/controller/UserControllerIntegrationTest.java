@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class UserControllerTest extends BaseControllerIntegrationTest {
+public class UserControllerIntegrationTest extends BaseControllerIntegrationTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
