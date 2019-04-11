@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest
-public class UserControllerIntegrationTest extends BaseControllerIntegrationTest {
+public class UserIntegrationTest extends AbstractIntegrationTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
