@@ -4,13 +4,9 @@ import com.github.adorogensky.workshop.alpha.domain.dto.AddUserProfileInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserProfileOutputTO;
 import com.github.adorogensky.workshop.alpha.domain.entity.UserProfile;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -29,7 +25,7 @@ public class UserControllerTest extends BaseControllerIntegrationTest {
 
 	@Test
 	public void getUsers() throws Exception {
-		List<UserProfileOutputTO> outputUserProfileList = sendHttpRequestAndVerifyStatus(
+		List<UserProfileOutputTO> outputUserProfileList = sendHttpRequestAndExpectStatus(
 			HttpMethod.GET, "/users", HttpStatus.OK
 		).andReturnObjectList(UserProfileOutputTO.class);
 
@@ -49,7 +45,7 @@ public class UserControllerTest extends BaseControllerIntegrationTest {
 	@Rollback(false)
 	public void addUser() throws Exception {
 		try {
-			List<UserProfileOutputTO> outputUsers = sendHttpRequestAndVerifyStatus(
+			List<UserProfileOutputTO> outputUsers = sendHttpRequestAndExpectStatus(
 				HttpMethod.GET, "/users", HttpStatus.OK
 			).andReturnObjectList(UserProfileOutputTO.class);
 
@@ -57,7 +53,7 @@ public class UserControllerTest extends BaseControllerIntegrationTest {
 			addUserInput.setLogin("bob");
 			addUserInput.setPassword("bob");
 
-			addUserOutput = sendHttpRequestAndVerifyStatus(
+			addUserOutput = sendHttpRequestAndExpectStatus(
 				HttpMethod.POST, "/users", addUserInput, HttpStatus.OK
 			).andReturnObject(UserProfileOutputTO.class);
 
@@ -69,7 +65,7 @@ public class UserControllerTest extends BaseControllerIntegrationTest {
 			assertEquals(0, LocalDateTime.now().getSecond() - addUserOutput.getCreated().getSecond());
 			assertNull(addUserOutput.getModified());
 
-			List<UserProfileOutputTO> outputUsersAfterAdd = sendHttpRequestAndVerifyStatus(
+			List<UserProfileOutputTO> outputUsersAfterAdd = sendHttpRequestAndExpectStatus(
 				HttpMethod.GET, "/users", HttpStatus.OK
 			).andReturnObjectList(UserProfileOutputTO.class);
 

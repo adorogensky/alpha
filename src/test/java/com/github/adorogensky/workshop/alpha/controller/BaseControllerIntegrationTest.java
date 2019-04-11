@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 
 @RunWith(SpringRunner.class)
@@ -46,12 +48,14 @@ public abstract class BaseControllerIntegrationTest {
 			);
 		}
 
-		protected SendHttpRequestResult andExpectStatus(HttpStatus expectedHttpStatus) {
-			assertEquals(
-				"Expected status <" + expectedHttpStatus.value() + "> but was <" + mvcResult.getResponse().getStatus() + ">",
-				expectedHttpStatus.value(), mvcResult.getResponse().getStatus()
-			);
-			return this;
+		protected SendHttpRequestResult andExpectRedirectedUrl(String redirectedUrl) {
+			assertEquals(redirectedUrl, getField(mvcResult.getModelAndView().getView(), "url"));
+			return new SendHttpRequestResult(mvcResult);
+		}
+
+		protected SendHttpRequestResult andExpectResponseContains(String text) throws Exception {
+			assertTrue(mvcResult.getResponse().getContentAsString().contains(text));
+			return new SendHttpRequestResult(mvcResult);
 		}
 	}
 
@@ -62,11 +66,11 @@ public abstract class BaseControllerIntegrationTest {
 	private ObjectMapper objectMapper;
 
 
-	protected SendHttpRequestResult sendHttpRequestAndVerifyStatus(HttpMethod httpMethod, String uriPath, HttpStatus expectedHttpStatus) throws Exception {
-		return sendHttpRequestAndVerifyStatus(httpMethod, uriPath, null, expectedHttpStatus);
+	protected SendHttpRequestResult sendHttpRequestAndExpectStatus(HttpMethod httpMethod, String uriPath, HttpStatus expectedHttpStatus) throws Exception {
+		return sendHttpRequestAndExpectStatus(httpMethod, uriPath, null, expectedHttpStatus);
 	}
 
-	protected SendHttpRequestResult sendHttpRequestAndVerifyStatus(HttpMethod httpMethod, String uriPath, Object content, HttpStatus expectedHttpStatus) throws Exception {
+	protected SendHttpRequestResult sendHttpRequestAndExpectStatus(HttpMethod httpMethod, String uriPath, Object content, HttpStatus expectedHttpStatus) throws Exception {
 		MockHttpServletRequestBuilder requestBuilder = request(httpMethod, uriPath).contentType(MediaType.APPLICATION_JSON);
 
 		if (content != null) {
