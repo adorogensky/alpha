@@ -71,7 +71,7 @@ public class UserControllerIntegrationTest extends BaseControllerIntegrationTest
 
 			assertEquals(outputUsers.size() + 1, outputUsersAfterAdd.size());
 
-			final Integer addUserOutputId = addUserOutput.getId();
+			final int addUserOutputId = addUserOutput.getId();
 
 			UserProfileOutputTO newAddUserOutputFromGetUsers = outputUsersAfterAdd.stream().filter(
 				outputUser -> outputUser.getId() == addUserOutputId
