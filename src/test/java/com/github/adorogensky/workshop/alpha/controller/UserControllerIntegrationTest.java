@@ -3,6 +3,7 @@ package com.github.adorogensky.workshop.alpha.controller;
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserProfileInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserProfileOutputTO;
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.Rollback;
@@ -15,6 +16,7 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@SpringBootTest
 public class UserControllerIntegrationTest extends BaseControllerIntegrationTest {
 
 	@PersistenceContext
