@@ -2,7 +2,6 @@ package com.github.adorogensky.workshop.alpha.controller;
 
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserProfileInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserProfileOutputTO;
-import com.github.adorogensky.workshop.alpha.domain.entity.UserProfile;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,6 @@ public class UserControllerIntegrationTest extends BaseControllerIntegrationTest
 
 	@PersistenceContext
 	private EntityManager entityManager;
-
-	private UserProfileOutputTO addUserOutput;
 
 	@Test
 	public void getUsers() throws Exception {
@@ -44,6 +41,7 @@ public class UserControllerIntegrationTest extends BaseControllerIntegrationTest
 	@Transactional
 	@Rollback(false)
 	public void addUser() throws Exception {
+		UserProfileOutputTO addUserOutput = null;
 		try {
 			List<UserProfileOutputTO> outputUsers = sendHttpRequestAndExpectStatus(
 				HttpMethod.GET, "/users", HttpStatus.OK
@@ -71,8 +69,10 @@ public class UserControllerIntegrationTest extends BaseControllerIntegrationTest
 
 			assertEquals(outputUsers.size() + 1, outputUsersAfterAdd.size());
 
+			final Integer addUserOutputId = addUserOutput.getId();
+
 			UserProfileOutputTO newAddUserOutputFromGetUsers = outputUsersAfterAdd.stream().filter(
-				outputUser -> outputUser.getId() == addUserOutput.getId()
+				outputUser -> outputUser.getId() == addUserOutputId
 			).findFirst().get();
 
 			assertNotNull(newAddUserOutputFromGetUsers);
@@ -81,14 +81,10 @@ public class UserControllerIntegrationTest extends BaseControllerIntegrationTest
 			assertEquals(0, LocalDateTime.now().getSecond() - newAddUserOutputFromGetUsers.getCreated().getSecond());
 			assertNull(newAddUserOutputFromGetUsers.getModified());
 		} finally {
-			UserProfile user = null;
-
 			if (addUserOutput != null) {
-				user = entityManager.find(UserProfile.class, addUserOutput.getId());
-			}
-
-			if (user != null) {
-				entityManager.remove(user);
+				entityManager.createQuery(
+					"DELETE FROM UserProfile user WHERE user.id = :userId"
+				).setParameter("userId", addUserOutput.getId()).executeUpdate();
 			}
 		}
 	}
