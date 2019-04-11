@@ -1,46 +1,26 @@
 package com.github.adorogensky.workshop.alpha.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserProfileInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserProfileOutputTO;
 import com.github.adorogensky.workshop.alpha.domain.entity.UserProfile;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-public class UserControllerTest {
-
-	@Autowired
-	private MockMvc mvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
+public class UserControllerTest extends BaseControllerIntegrationTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -49,14 +29,9 @@ public class UserControllerTest {
 
 	@Test
 	public void getUsers() throws Exception {
-		MvcResult result = mvc.perform(
-			get("/users").contentType(MediaType.APPLICATION_JSON)
-		).andExpect(status().isOk()).andReturn();
-
-		List<UserProfileOutputTO> outputUserProfileList = objectMapper.readValue(
-			result.getResponse().getContentAsString(),
-			new TypeReference<List<UserProfileOutputTO>>() {}
-		);
+		List<UserProfileOutputTO> outputUserProfileList = sendHttpRequestAndVerifyStatus(
+			HttpMethod.GET, "/users", HttpStatus.OK
+		).andReturnObjectList(UserProfileOutputTO.class);
 
 		assertEquals(1, outputUserProfileList.size());
 		assertNotNull(outputUserProfileList.get(0).getId());
@@ -74,29 +49,17 @@ public class UserControllerTest {
 	@Rollback(false)
 	public void addUser() throws Exception {
 		try {
-			MvcResult getUsersResult = mvc.perform(
-				get("/users").contentType(MediaType.APPLICATION_JSON)
-			).andExpect(status().isOk()).andReturn();
-
-			List<UserProfileOutputTO> outputUsers = objectMapper.readValue(
-				getUsersResult.getResponse().getContentAsString(),
-				new TypeReference<List<UserProfileOutputTO>>() {}
-			);
+			List<UserProfileOutputTO> outputUsers = sendHttpRequestAndVerifyStatus(
+				HttpMethod.GET, "/users", HttpStatus.OK
+			).andReturnObjectList(UserProfileOutputTO.class);
 
 			AddUserProfileInputTO addUserInput = new AddUserProfileInputTO();
 			addUserInput.setLogin("bob");
 			addUserInput.setPassword("bob");
 
-			MvcResult addUserResult = mvc.perform(
-				post("/users").contentType(MediaType.APPLICATION_JSON).content(
-					objectMapper.writeValueAsString(addUserInput)
-				)
-			).andExpect(status().isOk()).andReturn();
-
-			addUserOutput = objectMapper.readValue(
-				addUserResult.getResponse().getContentAsString(),
-				UserProfileOutputTO.class
-			);
+			addUserOutput = sendHttpRequestAndVerifyStatus(
+				HttpMethod.POST, "/users", addUserInput, HttpStatus.OK
+			).andReturnObject(UserProfileOutputTO.class);
 
 			assertEquals(addUserInput.getLogin(), addUserOutput.getLogin());
 
@@ -106,14 +69,9 @@ public class UserControllerTest {
 			assertEquals(0, LocalDateTime.now().getSecond() - addUserOutput.getCreated().getSecond());
 			assertNull(addUserOutput.getModified());
 
-			MvcResult getUsersAfterAddResult = mvc.perform(
-				get("/users").contentType(MediaType.APPLICATION_JSON)
-			).andExpect(status().isOk()).andReturn();
-
-			List<UserProfileOutputTO> outputUsersAfterAdd = objectMapper.readValue(
-				getUsersAfterAddResult.getResponse().getContentAsString(),
-				new TypeReference<List<UserProfileOutputTO>>() {}
-			);
+			List<UserProfileOutputTO> outputUsersAfterAdd = sendHttpRequestAndVerifyStatus(
+				HttpMethod.GET, "/users", HttpStatus.OK
+			).andReturnObjectList(UserProfileOutputTO.class);
 
 			assertEquals(outputUsers.size() + 1, outputUsersAfterAdd.size());
 
