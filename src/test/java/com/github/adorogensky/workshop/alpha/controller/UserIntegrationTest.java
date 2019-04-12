@@ -120,6 +120,25 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
+	@Transactional
+	public void addUserWithEmptyPasswordReturnsError() throws Exception {
+		AddUserInputTO addUser = new AddUserInputTO();
+		addUser.setLogin("john");
+		addUser.setPassword("");
+
+		ErrorTO error = sendHttpRequestAndExpectStatus(
+			HttpMethod.POST, "/users", addUser, HttpStatus.BAD_REQUEST
+		).andReturnObject(ErrorTO.class);
+
+		assertEquals(
+			"http://github.com/adorogensky/workshop/alpha/user/password/empty",
+			error.getId()
+		);
+
+		assertEquals("User password cannot be empty", error.getMessage());
+	}
+
+	@Test
 	public void addUserWithTakenLoginReturnsError() throws Exception {
 		AddUserInputTO addUser = new AddUserInputTO();
 		addUser.setLogin("alex");

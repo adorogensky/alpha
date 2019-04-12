@@ -54,6 +54,15 @@ public class UserService {
 			);
 		}
 
+		if (addUserInput.getPassword() == null || "".equals(addUserInput.getPassword().trim())) {
+			throw new BadRequestException(
+				new ErrorTO(
+					"http://github.com/adorogensky/workshop/alpha/user/password/empty",
+					"User password cannot be empty"
+				)
+			);
+		}
+
 		if (userRepository.findByLogin(addUserInput.getLogin()) != null) {
 			throw new BadRequestException(
 				new ErrorTO(
