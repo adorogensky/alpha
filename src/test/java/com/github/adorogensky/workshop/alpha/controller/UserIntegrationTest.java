@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
 
 import static org.junit.Assert.*;
 
@@ -64,7 +65,13 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 
 			assertEquals(addUserInput.getLogin(), addUserOutput.getLogin());
 
-			// verify password ?
+			User addUser = userRepository.findById(addUserOutput.getId());
+			assertNotNull(addUser);
+
+			assertEquals(
+				md5DigestAsHex(addUserInput.getPassword().getBytes()),
+				addUser.getPassword()
+			);
 
 			assertNotNull(addUserOutput.getCreated());
 			assertEquals(
