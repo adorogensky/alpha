@@ -9,22 +9,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
-	@GetMapping("/users")
+	@GetMapping
 	public List<UserOutputTO> getUsers() {
 		return userService.getUsers();
 	}
 
-	@PostMapping("/users")
+	@PostMapping
 	public UserOutputTO addUser(@RequestBody AddUserInputTO addUserInput) {
 		return userService.addUser(addUserInput);
 	}
 
-	@DeleteMapping("/users/{id}")
+	@DeleteMapping("{id}")
 	public void deleteUser(@PathVariable("id") Integer id) {
 		userService.deleteUser(id);
 	}

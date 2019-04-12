@@ -87,6 +87,15 @@ public class UserService {
 	}
 
 	public void deleteUser(Integer id) {
+		if (userRepository.findById(id) == null) {
+			throw new BadRequestException(
+				new ErrorTO(
+					"http://github.com/adorogensky/workshop/alpha/user/id/not-found",
+					"Cannot delete user with id = '" + id + "'"
+				)
+			);
+		}
+
 		userRepository.deleteById(id);
 	}
 }

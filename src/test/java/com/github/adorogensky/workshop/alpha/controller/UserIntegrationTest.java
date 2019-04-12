@@ -13,20 +13,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import static org.junit.Assert.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 @SpringBootTest
+@Transactional
 public class UserIntegrationTest extends AbstractIntegrationTest {
-
-	@PersistenceContext
-	private EntityManager entityManager;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -50,7 +46,6 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	@Rollback(false)
 	public void addUser() throws Exception {
 		UserOutputTO addUserOutput = null;
@@ -105,9 +100,7 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 			assertNull(newAddUserOutputFromGetUsers.getModified());
 		} finally {
 			if (addUserOutput != null) {
-				entityManager.createQuery(
-					"DELETE FROM User user WHERE user.id = :userId"
-				).setParameter("userId", addUserOutput.getId()).executeUpdate();
+				userRepository.deleteById(addUserOutput.getId());
 			}
 		}
 	}
@@ -127,7 +120,6 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	public void addUserWithEmptyPasswordReturnsError() throws Exception {
 		AddUserInputTO addUser = new AddUserInputTO();
 		addUser.setLogin("john");
@@ -164,7 +156,6 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	public void deleteUser() throws Exception {
 		User alexUser = userRepository.findByLogin("alex");
 		assertNotNull(alexUser);
@@ -172,5 +163,24 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 		sendHttpRequestAndExpectStatus(HttpMethod.DELETE, "/users/" + alexUser.getId(), HttpStatus.OK);
 
 		assertNull(userRepository.findByLogin("alex"));
+	}
+
+	@Test
+	public void deleteUserReturnsErrorWhenUserIsNotFoundById() throws Exception {
+		Integer randomInt = new Random().nextInt();
+
+		ErrorTO error = sendHttpRequestAndExpectStatus(
+			HttpMethod.DELETE, "/users/" + randomInt, HttpStatus.BAD_REQUEST
+		).andReturnObject(ErrorTO.class);
+
+		assertEquals(
+			"http://github.com/adorogensky/workshop/alpha/user/id/not-found",
+			error.getId()
+		);
+
+		assertEquals(
+			"Cannot delete user with id = '" + randomInt + "'",
+			error.getMessage()
+		);
 	}
 }
