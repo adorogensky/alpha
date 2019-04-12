@@ -43,7 +43,6 @@ public class UserService {
 		return outputUserProfileList;
 	}
 
-	@Transactional
 	public UserOutputTO addUser(AddUserInputTO addUserInput) {
 		if (addUserInput.getLogin() == null || "".equals(addUserInput.getLogin().trim())) {
 			throw new BadRequestException(
@@ -85,5 +84,9 @@ public class UserService {
 		addUserOutput.setCreated(newUser.getCreated());
 
 		return addUserOutput;
+	}
+
+	public void deleteUser(Integer id) {
+		userRepository.deleteById(id);
 	}
 }

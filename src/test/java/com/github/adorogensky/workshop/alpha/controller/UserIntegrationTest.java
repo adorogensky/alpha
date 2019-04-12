@@ -3,7 +3,10 @@ package com.github.adorogensky.workshop.alpha.controller;
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.ErrorTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserOutputTO;
+import com.github.adorogensky.workshop.alpha.domain.entity.User;
+import com.github.adorogensky.workshop.alpha.repository.UserRepository;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,9 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Autowired
+	private UserRepository userRepository;
+
 	@Test
 	public void getUsers() throws Exception {
 		List<UserOutputTO> outputUserProfileList = sendHttpRequestAndExpectStatus(
@@ -33,6 +39,7 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 
 		assertEquals(1, outputUserProfileList.size());
 		assertNotNull(outputUserProfileList.get(0).getId());
+
 		assertEquals("alex", outputUserProfileList.get(0).getLogin());
 		assertEquals(
 			LocalDateTime.of(2019, 4, 2, 7, 58, 28),
@@ -154,5 +161,16 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 		);
 
 		assertEquals("User login 'alex' cannot be used because it's taken", error.getMessage());
+	}
+
+	@Test
+	@Transactional
+	public void deleteUser() throws Exception {
+		User alexUser = userRepository.findByLogin("alex");
+		assertNotNull(alexUser);
+
+		sendHttpRequestAndExpectStatus(HttpMethod.DELETE, "/users/" + alexUser.getId(), HttpStatus.OK);
+
+		assertNull(userRepository.findByLogin("alex"));
 	}
 }

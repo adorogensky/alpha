@@ -4,10 +4,7 @@ import com.github.adorogensky.workshop.alpha.domain.dto.AddUserInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserOutputTO;
 import com.github.adorogensky.workshop.alpha.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +22,10 @@ public class UserController {
 	@PostMapping("/users")
 	public UserOutputTO addUser(@RequestBody AddUserInputTO addUserInput) {
 		return userService.addUser(addUserInput);
+	}
+
+	@DeleteMapping("/users/{id}")
+	public void deleteUser(@PathVariable("id") Integer id) {
+		userService.deleteUser(id);
 	}
 }
