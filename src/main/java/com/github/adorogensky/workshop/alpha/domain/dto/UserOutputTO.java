@@ -1,24 +1,13 @@
-package com.github.adorogensky.workshop.alpha.domain.entity;
+package com.github.adorogensky.workshop.alpha.domain.dto;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(schema = "alpha")
-public class UserProfile {
+public class UserOutputTO {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence_generator")
-	@SequenceGenerator(name = "user_id_sequence_generator", schema = "alpha", allocationSize = 1, sequenceName = "user_id_seq")
 	private Integer id;
 
 	private String login;
 
-	private String password;
-
-	@CreationTimestamp
 	private LocalDateTime created;
 
 	private LocalDateTime modified;
@@ -37,14 +26,6 @@ public class UserProfile {
 
 	public void setLogin(String login) {
 		this.login = login;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public LocalDateTime getCreated() {

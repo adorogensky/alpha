@@ -1,6 +1,6 @@
 package com.github.adorogensky.workshop.alpha.domain.dto;
 
-public class AddUserProfileInputTO {
+public class AddUserInputTO {
 
 	private String login;
 
