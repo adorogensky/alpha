@@ -11,6 +11,12 @@ if [ "$1" = "junit" ]; then
 	host_port=5433
 fi
 
+docker pull postgres
+
+if [ -z "$(docker network ls -f name=alpha-network -q)" ]; then
+	docker network create alpha-network
+fi
+
 docker run --name alphadb-$1 --network alpha-network \
 -e POSTGRES_DB=alphadb-$1 \
 -e POSTGRES_USER=alphadb-$1 \
