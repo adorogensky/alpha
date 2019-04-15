@@ -52,13 +52,11 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	public void addUser() throws Exception {
 		UserOutputTO addUserOutput = null;
 		try {
-			List<UserOutputTO> outputUsers = sendHttpRequestAndExpectStatus(
-				HttpMethod.GET, "/users", HttpStatus.OK
-			).andReturnObjectList(UserOutputTO.class);
-
 			AddUserInputTO addUserInput = new AddUserInputTO();
 			addUserInput.setLogin("bob");
 			addUserInput.setPassword("bob");
+
+			assertNull(userRepository.findByLogin(addUserInput.getLogin()));
 
 			addUserOutput = sendHttpRequestAndExpectStatus(
 				HttpMethod.POST, "/users", addUserInput, HttpStatus.OK
@@ -68,6 +66,8 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 
 			User addUser = userRepository.findById(addUserOutput.getId());
 			assertNotNull(addUser);
+
+			assertEquals(addUserInput.getLogin(), addUser.getLogin());
 
 			assertEquals(
 				md5DigestAsHex(addUserInput.getPassword().getBytes()),
@@ -82,30 +82,15 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 					addUserOutput.getCreated()
 				).toMillis() / 1000
 			);
-			assertNull(addUserOutput.getModified());
 
-			List<UserOutputTO> outputUsersAfterAdd = sendHttpRequestAndExpectStatus(
-				HttpMethod.GET, "/users", HttpStatus.OK
-			).andReturnObjectList(UserOutputTO.class);
-
-			assertEquals(outputUsers.size() + 1, outputUsersAfterAdd.size());
-
-			final int addUserOutputId = addUserOutput.getId();
-
-			UserOutputTO newAddUserOutputFromGetUsers = outputUsersAfterAdd.stream().filter(
-				outputUser -> outputUser.getId() == addUserOutputId
-			).findFirst().get();
-
-			assertNotNull(newAddUserOutputFromGetUsers);
-			assertEquals(addUserInput.getLogin(), newAddUserOutputFromGetUsers.getLogin());
-			assertNotNull(newAddUserOutputFromGetUsers.getCreated());
+			assertNotNull(addUserOutput.getModified());
 			assertEquals(
 				0,
 				Duration.between(
-					LocalDateTime.now(), newAddUserOutputFromGetUsers.getCreated()
+					addUserOutput.getCreated(),
+					addUserOutput.getModified()
 				).toMillis() / 1000
 			);
-			assertNull(newAddUserOutputFromGetUsers.getModified());
 		} finally {
 			if (addUserOutput != null) {
 				userRepository.deleteById(addUserOutput.getId());
