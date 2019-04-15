@@ -1,6 +1,7 @@
 package com.github.adorogensky.workshop.alpha.controller;
 
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserInputTO;
+import com.github.adorogensky.workshop.alpha.domain.dto.EditUserInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserOutputTO;
 import com.github.adorogensky.workshop.alpha.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,10 @@ public class UserController {
 	@DeleteMapping("{id}")
 	public void deleteUser(@PathVariable("id") Integer id) {
 		userService.deleteUser(id);
+	}
+
+	@PutMapping
+	public void editUser(@RequestBody EditUserInputTO editUserInput) {
+		userService.editUser(editUserInput);
 	}
 }

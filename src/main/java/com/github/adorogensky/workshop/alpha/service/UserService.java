@@ -1,6 +1,7 @@
 package com.github.adorogensky.workshop.alpha.service;
 
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserInputTO;
+import com.github.adorogensky.workshop.alpha.domain.dto.EditUserInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.ErrorTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserOutputTO;
 import com.github.adorogensky.workshop.alpha.domain.entity.User;
@@ -9,7 +10,7 @@ import com.github.adorogensky.workshop.alpha.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -74,7 +75,7 @@ public class UserService {
 
 		User newUser = new User();
 		newUser.setLogin(addUserInput.getLogin());
-		newUser.setPassword(DigestUtils.md5DigestAsHex(addUserInput.getPassword().getBytes()));
+		newUser.setPassword(md5DigestAsHex(addUserInput.getPassword().getBytes()));
 
 		userRepository.save(newUser);
 		entityManager.flush();
@@ -83,6 +84,7 @@ public class UserService {
 		addUserOutput.setId(newUser.getId());
 		addUserOutput.setLogin(addUserInput.getLogin());
 		addUserOutput.setCreated(newUser.getCreated());
+		addUserOutput.setModified(newUser.getModified());
 
 		return addUserOutput;
 	}
@@ -98,5 +100,11 @@ public class UserService {
 		}
 
 		userRepository.deleteById(id);
+	}
+
+	public void editUser(EditUserInputTO editUserInput) {
+		User editUser = userRepository.findById(editUserInput.getId());
+		editUser.setLogin(editUserInput.getLogin());
+		editUser.setPassword(md5DigestAsHex(editUserInput.getPassword().getBytes()));
 	}
 }

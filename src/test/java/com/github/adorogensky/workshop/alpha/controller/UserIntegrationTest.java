@@ -1,6 +1,7 @@
 package com.github.adorogensky.workshop.alpha.controller;
 
 import com.github.adorogensky.workshop.alpha.domain.dto.AddUserInputTO;
+import com.github.adorogensky.workshop.alpha.domain.dto.EditUserInputTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.ErrorTO;
 import com.github.adorogensky.workshop.alpha.domain.dto.UserOutputTO;
 import com.github.adorogensky.workshop.alpha.domain.entity.User;
@@ -188,6 +189,45 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 		assertEquals(
 			"Cannot delete user with id = '" + randomInt + "'",
 			error.getMessage()
+		);
+	}
+
+	@Test
+	public void editUser() throws Exception {
+		User alexUser = userRepository.findByLogin("alex");
+		assertNotNull(alexUser);
+		assertNotNull(alexUser.getCreated());
+		assertNull(alexUser.getModified());
+
+		EditUserInputTO editUser = new EditUserInputTO();
+		editUser.setId(alexUser.getId());
+		editUser.setLogin("alex2");
+		editUser.setPassword("alex2");
+
+		sendHttpRequestAndExpectStatus(
+			HttpMethod.PUT, "/users", editUser, HttpStatus.OK
+		);
+
+		assertNull(userRepository.findByLogin("alex"));
+
+		User editedAlexUser = userRepository.findByLogin(editUser.getLogin());
+
+		assertEquals(editUser.getLogin(), editedAlexUser.getLogin());
+
+		assertEquals(
+			md5DigestAsHex(editUser.getPassword().getBytes()),
+			editedAlexUser.getPassword()
+		);
+
+		assertEquals(alexUser.getCreated(), editedAlexUser.getCreated());
+
+		assertNotNull(alexUser.getModified());
+		assertEquals(
+			0,
+			Duration.between(
+				LocalDateTime.now(),
+				editedAlexUser.getModified()
+			).toMillis() / 1000
 		);
 	}
 }
