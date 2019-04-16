@@ -238,4 +238,34 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 		assertEquals("http://github.com/adorogensky/workshop/alpha/user/id/not-found", error.getId());
 		assertEquals("Cannot edit user with id = '" + editUserInput.getId() + "'", error.getMessage());
 	}
+
+	@Test
+	public void editUserReturnsErrorWhenUserLoginIsEmpty() throws Exception {
+		EditUserInputTO editUserInput = new EditUserInputTO();
+		editUserInput.setId(1);
+		editUserInput.setLogin("");
+		editUserInput.setPassword("password");
+
+		ErrorTO error = sendHttpRequestAndExpectStatus(
+			HttpMethod.PUT, "/users", editUserInput, HttpStatus.BAD_REQUEST
+		).andReturnObject(ErrorTO.class);
+
+		assertEquals("http://github.com/adorogensky/workshop/alpha/user/login/empty", error.getId());
+		assertEquals("Cannot edit user with id = '" + editUserInput.getId() + "' because their login is empty", error.getMessage());
+	}
+
+	@Test
+	public void editUserReturnsErrorWhenUserPasswordIsEmpty() throws Exception {
+		EditUserInputTO editUserInput = new EditUserInputTO();
+		editUserInput.setId(1);
+		editUserInput.setLogin("john");
+		editUserInput.setPassword("");
+
+		ErrorTO error = sendHttpRequestAndExpectStatus(
+			HttpMethod.PUT, "/users", editUserInput, HttpStatus.BAD_REQUEST
+		).andReturnObject(ErrorTO.class);
+
+		assertEquals("http://github.com/adorogensky/workshop/alpha/user/password/empty", error.getId());
+		assertEquals("Cannot edit user with id = '" + editUserInput.getId() + "' because their password is empty", error.getMessage());
+	}
 }

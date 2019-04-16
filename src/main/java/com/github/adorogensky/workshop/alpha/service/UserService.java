@@ -114,6 +114,24 @@ public class UserService {
 			);
 		}
 
+		if (editUserInput.getLogin() == null || "".equals(editUserInput.getLogin().trim())) {
+			throw new BadRequestException(
+				new ErrorTO(
+					"http://github.com/adorogensky/workshop/alpha/user/login/empty",
+					"Cannot edit user with id = '" + editUserInput.getId() + "' because their login is empty"
+				)
+			);
+		}
+
+		if (editUserInput.getPassword() == null || "".equals(editUserInput.getPassword().trim())) {
+			throw new BadRequestException(
+				new ErrorTO(
+					"http://github.com/adorogensky/workshop/alpha/user/password/empty",
+					"Cannot edit user with id = '" + editUserInput.getId() + "' because their password is empty"
+				)
+			);
+		}
+
 		editUser.setLogin(editUserInput.getLogin());
 		editUser.setPassword(md5DigestAsHex(editUserInput.getPassword().getBytes()));
 	}
