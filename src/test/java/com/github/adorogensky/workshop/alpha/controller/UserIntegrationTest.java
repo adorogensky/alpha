@@ -58,23 +58,16 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 
 			assertNull(userRepository.findByLogin(addUserInput.getLogin()));
 
+			List<User> usersBeforeAdd = userRepository.findAll();
+
 			addUserOutput = sendHttpRequestAndExpectStatus(
 				HttpMethod.POST, "/users", addUserInput, HttpStatus.OK
 			).andReturnObject(UserOutputTO.class);
 
+			assertNotNull(addUserOutput.getId());
 			assertEquals(addUserInput.getLogin(), addUserOutput.getLogin());
-
-			User addUser = userRepository.findById(addUserOutput.getId());
-			assertNotNull(addUser);
-
-			assertEquals(addUserInput.getLogin(), addUser.getLogin());
-
-			assertEquals(
-				md5DigestAsHex(addUserInput.getPassword().getBytes()),
-				addUser.getPassword()
-			);
-
 			assertNotNull(addUserOutput.getCreated());
+			assertNotNull(addUserOutput.getModified());
 			assertEquals(
 				0,
 				Duration.between(
@@ -82,15 +75,32 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 					addUserOutput.getCreated()
 				).toMillis() / 1000
 			);
-
-			assertNotNull(addUserOutput.getModified());
 			assertEquals(
 				0,
 				Duration.between(
-					addUserOutput.getCreated(),
-					addUserOutput.getModified()
+					addUserOutput.getModified(),
+					addUserOutput.getCreated()
 				).toMillis() / 1000
 			);
+
+			List<User> usersAfterAdd = userRepository.findAll();
+			assertEquals(usersBeforeAdd.size() + 1, usersAfterAdd.size());
+
+			User addUser = userRepository.findById(addUserOutput.getId());
+			assertNotNull(addUser);
+
+			assertEquals(addUserOutput.getLogin(), addUser.getLogin());
+
+			assertEquals(
+				md5DigestAsHex(addUserInput.getPassword().getBytes()),
+				addUser.getPassword()
+			);
+
+			assertEquals(addUserOutput.getCreated(), addUser.getCreated());
+			assertEquals(addUserOutput.getModified(), addUser.getModified());
+
+			usersAfterAdd.remove(addUser);
+			assertEquals(usersBeforeAdd, usersAfterAdd);
 		} finally {
 			if (addUserOutput != null) {
 				userRepository.deleteById(addUserOutput.getId());

@@ -5,10 +5,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(schema = "alpha", name = "user_profile")
-public class User {
+public class User extends MyEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence_generator")
@@ -63,5 +64,26 @@ public class User {
 
 	public void setModified(LocalDateTime modified) {
 		this.modified = modified;
+	}
+
+	@Override
+	public boolean equals(Object that) {
+		if (this == that) return true;
+		if (that == null || getClass() != that.getClass()) return false;
+		User user = (User) that;
+		return Objects.equals(login, user.login) &&
+			Objects.equals(password, user.password) &&
+			Objects.equals(created, user.created) &&
+			Objects.equals(modified, user.modified);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(login, password, created, modified);
+	}
+
+	@Override
+	public String toString() {
+		return toString(this);
 	}
 }
