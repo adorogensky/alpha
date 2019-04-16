@@ -225,4 +225,17 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 			).toMillis() / 1000
 		);
 	}
+
+	@Test
+	public void editUserReturnsErrorWhenUserIsNotFoundById() throws Exception {
+		EditUserInputTO editUserInput = new EditUserInputTO();
+		editUserInput.setId(new Random().nextInt());
+
+		ErrorTO error = sendHttpRequestAndExpectStatus(
+			HttpMethod.PUT, "/users", editUserInput, HttpStatus.BAD_REQUEST
+		).andReturnObject(ErrorTO.class);
+
+		assertEquals("http://github.com/adorogensky/workshop/alpha/user/id/not-found", error.getId());
+		assertEquals("Cannot edit user with id = '" + editUserInput.getId() + "'", error.getMessage());
+	}
 }

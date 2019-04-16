@@ -104,6 +104,16 @@ public class UserService {
 
 	public void editUser(EditUserInputTO editUserInput) {
 		User editUser = userRepository.findById(editUserInput.getId());
+
+		if (editUser == null) {
+			throw new BadRequestException(
+				new ErrorTO(
+					"http://github.com/adorogensky/workshop/alpha/user/id/not-found",
+					"Cannot edit user with id = '" + editUserInput.getId() + "'"
+				)
+			);
+		}
+
 		editUser.setLogin(editUserInput.getLogin());
 		editUser.setPassword(md5DigestAsHex(editUserInput.getPassword().getBytes()));
 	}
