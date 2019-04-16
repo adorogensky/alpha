@@ -7,7 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 @WebMvcTest
-public class SpringfoxSwaggerUITest extends AbstractIntegrationTest {
+public class SpringfoxSwaggerUITests extends AbstractIntegrationTests {
 
 	@MockBean
 	private UserController userController;

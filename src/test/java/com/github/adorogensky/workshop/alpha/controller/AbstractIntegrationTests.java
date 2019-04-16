@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
-public abstract class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTests {
 
 	class SendHttpRequestResult {
 

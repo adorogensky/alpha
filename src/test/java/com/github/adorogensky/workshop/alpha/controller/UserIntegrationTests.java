@@ -24,7 +24,7 @@ import java.util.Random;
 
 @SpringBootTest
 @Transactional
-public class UserIntegrationTest extends AbstractIntegrationTest {
+public class UserIntegrationTests extends AbstractIntegrationTests {
 
 	@Autowired
 	private UserRepository userRepository;
