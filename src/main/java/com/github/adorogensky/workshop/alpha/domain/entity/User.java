@@ -54,16 +54,8 @@ public class User extends MyEntity {
 		return created;
 	}
 
-	public void setCreated(LocalDateTime created) {
-		this.created = created;
-	}
-
 	public LocalDateTime getModified() {
 		return modified;
-	}
-
-	public void setModified(LocalDateTime modified) {
-		this.modified = modified;
 	}
 
 	@Override
