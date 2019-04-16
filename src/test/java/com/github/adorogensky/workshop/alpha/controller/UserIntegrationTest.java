@@ -109,7 +109,7 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void addUserWithEmptyLoginReturnsError() throws Exception {
+	public void addUserReturnsErrorWhenLoginIsEmpty() throws Exception {
 		ErrorTO error = sendHttpRequestAndExpectStatus(
 			HttpMethod.POST, "/users", new AddUserInputTO(), HttpStatus.BAD_REQUEST
 		).andReturnObject(ErrorTO.class);
@@ -123,7 +123,7 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void addUserWithEmptyPasswordReturnsError() throws Exception {
+	public void addUserReturnsErrorWhenPasswordIsEmpty() throws Exception {
 		AddUserInputTO addUser = new AddUserInputTO();
 		addUser.setLogin("john");
 		addUser.setPassword("");
@@ -141,7 +141,7 @@ public class UserIntegrationTest extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void addUserWithTakenLoginReturnsError() throws Exception {
+	public void addUserReturnsErrorWhenLoginIsTaken() throws Exception {
 		AddUserInputTO addUser = new AddUserInputTO();
 		addUser.setLogin("alex");
 		addUser.setPassword("alex");
