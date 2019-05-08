@@ -18,7 +18,7 @@ import static junit.framework.TestCase.assertNotNull;
 @SpringBootTest
 @Transactional
 @RunWith(SpringRunner.class)
-public class CommitJUnitBeforeTest {
+public class CommitTransactionBeforeTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
