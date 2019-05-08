@@ -30,12 +30,17 @@ public class CommitJUnitBeforeTest {
 		User user = new User();
 		user.setLogin("test");
 		user.setPassword("test");
+
 		entityManager.persist(user);
+		userId = user.getId();
 		entityManager.flush();
+
+		/*
+			Manually commit and end current test transaction because @Commit won't work on @Before and @After methods.
+			Right after that start a new test transaction so that the following test execution runs in a transaction.
+		 */
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
-		userId = user.getId();
-		TestTransaction.start();
 	}
 
 	@Test
@@ -45,7 +50,21 @@ public class CommitJUnitBeforeTest {
 
 	@After
 	public void tearDown() {
-		entityManager.createQuery("DELETE User user WHERE user.id = :userId").setParameter("userId", userId).executeUpdate();
+		TestTransaction.start();
+
+		entityManager.createQuery(
+			"DELETE User user WHERE user.id = :userId"
+		).setParameter(
+			"userId", userId
+		).executeUpdate();
+
+		/*
+			Manually commit and end current test transaction because @Commit won't work on @Before and @After methods.
+			@Commit does work with @Test methods since @Before, @Test and @After code is logically grouped
+			and consecutively runs in the same test transaction when either the test class or the test method is
+			annotated @Transactional.
+		*/
+
 		TestTransaction.flagForCommit();
 		TestTransaction.end();
 	}
