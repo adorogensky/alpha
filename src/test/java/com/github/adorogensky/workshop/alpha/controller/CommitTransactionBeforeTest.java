@@ -18,7 +18,7 @@ import static junit.framework.TestCase.assertNotNull;
 /*
  * This test demonstrates how to add a new user record in database.
  * It runs and commits two transactions in @Before and @After methods
- * that adds a user and deletes it respectively.
+ * that add a user and delete it respectively.
  */
 @SpringBootTest
 @Transactional
