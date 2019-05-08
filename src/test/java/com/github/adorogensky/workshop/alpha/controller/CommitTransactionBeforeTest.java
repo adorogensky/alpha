@@ -15,6 +15,11 @@ import javax.persistence.PersistenceContext;
 
 import static junit.framework.TestCase.assertNotNull;
 
+/*
+ * This test demonstrates how to add a new user record in database.
+ * It runs and commits two transactions in @Before and @After methods
+ * that adds a user and deletes it respectively.
+ */
 @SpringBootTest
 @Transactional
 @RunWith(SpringRunner.class)
@@ -33,7 +38,6 @@ public class CommitTransactionBeforeTest {
 
 		entityManager.persist(user);
 		userId = user.getId();
-		entityManager.flush();
 
 		/*
 			Manually commit and end current test transaction because @Commit won't work on @Before and @After methods.
