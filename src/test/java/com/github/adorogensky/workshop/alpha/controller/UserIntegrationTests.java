@@ -43,8 +43,10 @@ public class UserIntegrationTests extends AbstractIntegrationTests {
 			LocalDateTime.of(2019, 4, 2, 7, 58, 28),
 			outputUserProfileList.get(0).getCreated()
 		);
-
-		assertNull(outputUserProfileList.get(0).getModified());
+		assertEquals(
+			LocalDateTime.of(2019, 4, 2, 7, 58, 28),
+			outputUserProfileList.get(0).getModified()
+		);
 	}
 
 	@Test
@@ -192,7 +194,7 @@ public class UserIntegrationTests extends AbstractIntegrationTests {
 		User alexUser = userRepository.findByLogin("alex");
 		assertNotNull(alexUser);
 		assertNotNull(alexUser.getCreated());
-		assertNull(alexUser.getModified());
+		assertNotNull(alexUser.getModified());
 
 		EditUserInputTO editUser = new EditUserInputTO();
 		editUser.setId(alexUser.getId());
