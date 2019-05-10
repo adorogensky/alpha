@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import static junit.framework.TestCase.assertNotNull;
+import java.math.BigInteger;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /*
  * This test demonstrates how to add a new user record in database.
@@ -30,8 +33,14 @@ public class CommitTransactionBeforeTest {
 
 	private Integer userId;
 
+	private BigInteger userCount;
+
 	@Before
 	public void setUp() {
+		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
+		assertEquals(1, userCount.size());
+		this.userCount = (BigInteger) userCount.get(0);
+
 		User user = new User();
 		user.setLogin("test");
 		user.setPassword("test");
@@ -48,8 +57,10 @@ public class CommitTransactionBeforeTest {
 	}
 
 	@Test
-	public void emptyTest() {
-		assertNotNull(entityManager.find(User.class, userId));
+	public void findNewlyAddedUser() {
+		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
+		assertEquals(1, userCount.size());
+		assertEquals(this.userCount.add(BigInteger.valueOf(1)), userCount.get(0));
 	}
 
 	@After
