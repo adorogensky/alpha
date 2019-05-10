@@ -5,16 +5,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import java.math.BigInteger;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,15 +30,16 @@ public class CommitTransactionBeforeTest {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	private Integer userId;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-	private BigInteger userCount;
+	private int userId;
+
+	private int userCount;
 
 	@Before
 	public void setUp() {
-		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
-		assertEquals(1, userCount.size());
-		this.userCount = (BigInteger) userCount.get(0);
+		userCount = jdbcTemplate.queryForObject("SELECT COUNT(id) FROM alpha.user_profile", Integer.class);
 
 		User user = new User();
 		user.setLogin("test");
@@ -58,9 +58,7 @@ public class CommitTransactionBeforeTest {
 
 	@Test
 	public void findNewlyAddedUser() {
-		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
-		assertEquals(1, userCount.size());
-		assertEquals(this.userCount.add(BigInteger.valueOf(1)), userCount.get(0));
+		assertEquals(Integer.valueOf(userCount + 1), jdbcTemplate.queryForObject("SELECT COUNT(id) FROM alpha.user_profile", Integer.class));
 	}
 
 	@After
