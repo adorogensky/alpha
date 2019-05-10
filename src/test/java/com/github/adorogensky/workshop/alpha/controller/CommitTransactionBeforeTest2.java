@@ -35,11 +35,14 @@ public class CommitTransactionBeforeTest2 {
 
 	private Integer userId;
 
-	private Integer userCount;
+	private BigInteger userCount;
 
 	@Before
 	public void setUp() {
-		userCount = userRepository.findAll().size();
+		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
+		assertEquals(1, userCount.size());
+		this.userCount = (BigInteger) userCount.get(0);
+
 		User addUser = new User();
 		addUser.setLogin("test2");
 		addUser.setPassword("test2");
@@ -51,7 +54,7 @@ public class CommitTransactionBeforeTest2 {
 	public void findNewlyAddedUser() {
 		List userCount = entityManager.createNativeQuery("SELECT COUNT(id) FROM alpha.user_profile").getResultList();
 		assertEquals(1, userCount.size());
-		assertEquals(BigInteger.valueOf(this.userCount + 1), userCount.get(0));
+		assertEquals(this.userCount.add(BigInteger.valueOf(1)), userCount.get(0));
 	}
 
 	@After
