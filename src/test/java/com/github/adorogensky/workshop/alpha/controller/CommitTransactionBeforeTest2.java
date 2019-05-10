@@ -18,6 +18,11 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+/*
+ * This test demonstrates how to add a new user record in database.
+ * It runs and commits two transactions in @Before and @After methods
+ * that add a user and delete it respectively.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CommitTransactionBeforeTest2 {
